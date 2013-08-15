@@ -11,15 +11,24 @@ BuildRequires: gettext-tools
 BuildRequires: pkgconfig(flac)
 BuildRequires: pkgconfig(vorbis)
 
+%define testbindir %{_builddir}/%{name}-%{version}
+
 %description
 Description: %{summary}
 
 %package devel
-Summary: LMS headers, static libraries, documentation and test programs
+Summary: LMS headers, static libraries, and documentation
 Requires: %{name} = %{version}
 
 %description devel
-Headers, static libraries, test programs and documentation for LMS
+Headers, static libraries, and documentation for LMS
+
+%package test
+Summary: LMS test programs
+Requires: %{name} = %{version}
+
+%description test
+LMS test programs
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -33,6 +42,11 @@ make %{?jobs:-j%jobs}
 %install
 rm -rf %{buildroot}
 %make_install
+
+# Temporarily install test binaries
+mkdir -p %{buildroot}/%{_bindir}
+libtool --mode=install install -m 0755 %{testbindir}/src/bin/test %{buildroot}/%{_bindir}/lms-test
+libtool --mode=install install -m 0755 %{testbindir}/src/bin/list-parsers %{buildroot}/%{_bindir}/lms-list-parsers
 
 %post
 /sbin/ldconfig
@@ -52,3 +66,7 @@ rm -rf %{buildroot}
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
+
+%files test
+%defattr(-, root, root)
+%{_bindir}/*
