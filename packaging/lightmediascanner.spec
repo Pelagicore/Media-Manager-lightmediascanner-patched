@@ -1,7 +1,7 @@
 Name:       lightmediascanner
 Summary:    Light media scanner is a media indexer for embedded devices
 Version:    0.4.5
-Release:    1
+Release:    2
 Group:      Multimedia/Libraries
 License:    LGPL-2.1
 Source:	    %{name}-%{version}.tar.gz

@@ -1,2 +1,6 @@
+* Fri Aug 16 2013 Mikko Ylinen <mikko.ylinen@intel.com> accepted/tizen/20130710.221745@ab52953
+- Install test binaries. Fixes TIVI-1428
+- Fix rpmlint errors
+
 * Tue Jul 09 2013 Mikko Ylinen <mikko.ylinen@intel.com> release_0.4.5@5daf77b
 - add LMS to Tizen (upstream v0.4.5)
