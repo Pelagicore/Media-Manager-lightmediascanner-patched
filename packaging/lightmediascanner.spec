@@ -5,9 +5,12 @@ Release:    2
 Group:      Multimedia/Libraries
 License:    LGPL-2.1
 Source:	    %{name}-%{version}.tar.gz
-Url:	    http://lms.garage.maemo.org/
+Url:	    https://github.com/profusion/lightmediascanner
 BuildRequires: sqlite-devel
 BuildRequires: gettext-tools
+BuildRequires: pkgconfig(libavcodec)
+BuildRequires: pkgconfig(libavformat)
+BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(flac)
 BuildRequires: pkgconfig(vorbis)
 
@@ -60,6 +63,7 @@ libtool --mode=install install -m 0755 %{testbindir}/src/bin/list-parsers %{buil
 %license COPYING
 %{_libdir}/*.so.*
 %{_libdir}/lightmediascanner/plugins/*
+%{_prefix}/share/dbus-1/services/*.service
 
 %files devel
 %defattr(-, root, root)
