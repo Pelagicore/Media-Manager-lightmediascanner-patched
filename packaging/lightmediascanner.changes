@@ -1,3 +1,16 @@
+* Tue Jan 07 2014 Leandro Dorileo <leandro.maciel.dorileo@intel.com>
+- add libmp4v2 dependencie
+- upstream rebased
+ - monitors mounts and triggers scans.
+
+* Fri Jan 03 2014 Leandro Dorileo <leandro.maciel.dorileo@intel.com> accepted/tizen/generic/20140106.140339
+- packaging: update spec and upstream rebased
+- New dependencies:
+ - glib-2.0
+ - libavcodec (enables generic parser)
+ - libavformat (enables generic parser)
+- Install service files and update the upstream URL.
+
 * Fri Aug 16 2013 Mikko Ylinen <mikko.ylinen@intel.com> accepted/tizen/20130710.221745@ab52953
 - Install test binaries. Fixes TIVI-1428
 - Fix rpmlint errors

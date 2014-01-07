@@ -8,11 +8,13 @@ Source:	    %{name}-%{version}.tar.gz
 Url:	    https://github.com/profusion/lightmediascanner
 BuildRequires: sqlite-devel
 BuildRequires: gettext-tools
+BuildRequires: libmp4v2-devel
 BuildRequires: pkgconfig(libavcodec)
 BuildRequires: pkgconfig(libavformat)
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(flac)
 BuildRequires: pkgconfig(vorbis)
+Requires: libmp4v2
 
 %define testbindir %{_builddir}/%{name}-%{version}
 
