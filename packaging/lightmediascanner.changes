@@ -1,3 +1,7 @@
+* Tue Jan 21 2014 Leandro Dorileo <leandro.maciel.dorileo@intel.com>
+- upstream rebased
+- added theora dependency
+
 * Tue Jan 07 2014 Leandro Dorileo <leandro.maciel.dorileo@intel.com>
 - add libmp4v2 dependencie
 - upstream rebased
