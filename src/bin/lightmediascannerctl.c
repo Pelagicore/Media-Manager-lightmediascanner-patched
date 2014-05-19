@@ -490,6 +490,7 @@ main(int argc, char *argv[])
     GError *error = NULL;
     struct app app;
     int i;
+    gboolean start_service = TRUE;
 
     if (argc < 2) {
         fprintf(stderr, "Missing action, see --help.\n");
@@ -500,6 +501,8 @@ main(int argc, char *argv[])
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             print_help(argv[0]);
             return EXIT_SUCCESS;
+        } else if (strcmp(argv[i], "--dont-start-service") == 0) {
+            start_service = FALSE;
         }
     }
 
@@ -521,7 +524,7 @@ main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    if (!start_service_by_name())
+    if (start_service && !start_service_by_name())
         return EXIT_FAILURE;
 
     app.timer = NULL;
