@@ -102,6 +102,7 @@ extern "C" {
         struct lms_string_size codec;
         struct lms_string_size dlna_profile;
         struct lms_string_size dlna_mime;
+        struct lms_string_size album_art_url;
         unsigned int playcnt;
         unsigned int length;
         unsigned int sampling_rate;

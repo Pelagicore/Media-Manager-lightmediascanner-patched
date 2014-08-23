@@ -204,6 +204,7 @@ struct id3_info {
     struct lms_string_size genre;
     int trackno;
     int cur_artist_priority;
+    struct lms_string_size album_art_url;
 };
 
 struct id3v2_frame_header {
@@ -883,6 +884,71 @@ _get_id3v2_trackno(const char *frame_data, unsigned int frame_size, struct id3_i
     free(trackno.str);
 }
 
+static void _get_id3v2_cover_art (const char *frame_data, unsigned int frame_size, struct id3_info *info) {
+        char cache_path[1024];
+
+        char *p = getenv ("XDG_CACHE_HOME");
+        if (p) {
+            strcpy (cache_path, p);
+            mkdir (cache_path, 0766);
+            strcat (cache_path, "/media-manager-artwork/");
+            mkdir (cache_path, 0766);
+        } else {
+            char *home = getenv("HOME");
+            strcpy (cache_path, home);
+            strcat (cache_path, "/.cache/");
+            mkdir (cache_path, 0766);
+            strcat (cache_path, "media-manager-artwork/");
+            mkdir (cache_path, 0766);
+        }
+
+        strcat (cache_path, "media-manager-cover-XXXXXX.jpg");
+
+        int fd = mkstemps (cache_path, 4);
+        if (fd == -1) {
+            fprintf(stderr, "Unable to create image file: %s\n", cache_path);
+            return;
+        }
+
+        /* Skip text encoding byte */
+        frame_data += 1;
+        frame_size--;
+
+        /* Skip MIME */
+        for(;frame_data[0] != '\0'; frame_data++) {
+            frame_size--;
+        }
+
+        /* Skipp string terminator */
+        frame_size--;
+        frame_data++;
+
+        if (frame_data[0] != 0x03) {
+            /* Not front cover, skipping */
+            return;
+        }
+
+        frame_data++;
+        frame_size--;
+
+        /* Skip description */
+        for(;frame_data[0] != '\0'; frame_data++) {
+            frame_size--;
+        }
+
+        /* Skip string terminator */
+        frame_size--;
+        frame_data++;
+
+        write (fd, frame_data, frame_size);
+        close(fd);
+
+        struct lms_string_size album_art_url = { };
+        album_art_url.str = strdup (cache_path);
+        album_art_url.len = strlen(cache_path);
+        info->album_art_url = album_art_url;
+}
+
 static void
 _parse_id3v2_frame(struct id3v2_frame_header *fh, const char *frame_data, struct id3_info *info, lms_charset_conv_t **cs_convs)
 {
@@ -899,8 +965,13 @@ _parse_id3v2_frame(struct id3v2_frame_header *fh, const char *frame_data, struct
             fh->frame_id, fh->frame_size, frame_data[0]);
 #endif
 
-    /* All used frames start with 'T' */
     fid = fh->frame_id;
+    /* APIC frame */
+    if (fid[0] == 'A' && fid[1] == 'P' && fid[2] == 'I' && fid[3] == 'C') {
+        _get_id3v2_cover_art (frame_data, fh->frame_size, info);
+    }
+
+    /* All other frames start with 'T' */
     if (fid[0] != 'T')
         return;
 
@@ -1025,7 +1096,7 @@ _parse_id3v2(int fd, long id3v2_offset, struct id3_info *info,
 
         if (fh.frame_size > 0 &&
             !fh.compression &&
-            fh.frame_id[0] == 'T' &&
+            (fh.frame_id[0] == 'T' || fh.frame_id[0] == 'A') &&
             memcmp(fh.frame_id, "TXXX", 4) != 0) {
             char *frame_data;
 
@@ -1224,6 +1295,7 @@ _parse(struct plugin *plugin, struct lms_context *ctxt, const struct lms_file_in
     audio_info.album = info.album;
     audio_info.genre = info.genre;
     audio_info.trackno = info.trackno;
+    audio_info.album_art_url = info.album_art_url;
 
     _parse_mpeg_header(fd, sync_offset, &audio_info, finfo->size);
 
@@ -1238,6 +1310,7 @@ _parse(struct plugin *plugin, struct lms_context *ctxt, const struct lms_file_in
     free(info.artist.str);
     free(info.album.str);
     free(info.genre.str);
+    free(info.album_art_url.str);
 
     return r;
 }

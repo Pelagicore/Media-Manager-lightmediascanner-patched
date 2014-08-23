@@ -220,7 +220,8 @@ _db_table_updater_audio_albums_0(sqlite3 *db, const char *table, unsigned int cu
         "CREATE TABLE IF NOT EXISTS audio_albums ("
         "id INTEGER PRIMARY KEY, "
         "artist_id INTEGER, "
-        "name TEXT"
+        "name TEXT,"
+        "album_art_url TEXT"
         ")");
     if (ret != 0)
         goto done;
@@ -398,7 +399,7 @@ lms_db_audio_start(lms_db_audio_t *lda)
         return -3;
 
     lda->insert_album = lms_db_compile_stmt(lda->db,
-        "INSERT INTO audio_albums (artist_id, name) VALUES (?, ?)");
+        "INSERT INTO audio_albums (artist_id, name, album_art_url) VALUES (?, ?, ?)");
     if (!lda->insert_album)
         return -4;
 
@@ -621,6 +622,10 @@ _db_insert_album(lms_db_audio_t *lda, const struct lms_audio_info *info, int64_t
         goto done;
 
     ret = lms_db_bind_text(stmt, 2, info->album.str, info->album.len);
+    if (ret != 0)
+        goto done;
+
+    ret = lms_db_bind_text(stmt, 3, info->album_art_url.str, info->album_art_url.len);
     if (ret != 0)
         goto done;
 
