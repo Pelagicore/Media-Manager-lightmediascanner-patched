@@ -561,6 +561,18 @@ lms_db_create_core_tables_if_required(sqlite3 *db)
 
     errmsg = NULL;
     r = sqlite3_exec(db,
+                     "PRAGMA journal_mode = WAL;"
+                      "PRAGMA wal_autocheckpoint = 1;",
+                     NULL, NULL, &errmsg);
+    if (r != SQLITE_OK) {
+        fprintf(stderr, "ERROR: set journal mode to WAL: %s\n",
+                errmsg);
+        sqlite3_free(errmsg);
+        return -1;
+    }
+
+    errmsg = NULL;
+    r = sqlite3_exec(db,
                      "CREATE TABLE IF NOT EXISTS lms_internal ("
                      "tab TEXT NOT NULL UNIQUE, "
                      "version INTEGER NOT NULL"
